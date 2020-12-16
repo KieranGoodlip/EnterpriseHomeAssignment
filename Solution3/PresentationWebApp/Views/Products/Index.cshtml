@@ -1,0 +1,19 @@
+﻿@model IEnumerable<ShoppingCart.Application.ViewModels.ProductViewModel>
+
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Products Catalogue</h1>
+
+
+<div class="container">
+    <div class="row">
+
+     @Html.Partial("ViewProductsPartial", Model)
+    </div>
+</div>
+
+ 
+
