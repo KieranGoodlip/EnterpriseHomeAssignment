@@ -10,7 +10,10 @@
 
 <div class="container">
     <div class="row">
+     @Html.Partial("SearchPartial", Model);
+    </div>
 
+    <div class="row">
      @Html.Partial("ViewProductsPartial", Model)
     </div>
 </div>

@@ -27,22 +27,6 @@ namespace ShoppingCart.Application.Services
 
         public void AddProduct(ProductViewModel product)
         {
-            //changing this using automapper later on
-
-            //Converting from
-            //ProductViewModel >> Product
-            /*     Product newProduct = new Product()
-                 {
-                     Description = product.Description,
-                     Name = product.Name,
-                     Price = product.Price,
-                     CategoryId = product.Category.Id,
-                     ImageUrl = product.ImageUrl
-                 };
-
-                 _productsRepo.AddProduct(newProduct);
-            */
-
             var myProduct = _mapper.Map<Product>(product);
             myProduct.Category = null;
 
@@ -63,72 +47,26 @@ namespace ShoppingCart.Application.Services
 
         public ProductViewModel GetProduct(Guid id)
         {
-            //AutoMapper
-
-
-           
-
             var myProduct = _productsRepo.GetProduct(id);
             var result = _mapper.Map<ProductViewModel>(myProduct);
             return result;
-
-
-         /*  ProductViewModel myModel = new ProductViewModel();
-            myModel.Description = myProduct.Description;
-            myModel.ImageUrl = myProduct.ImageUrl;
-            myModel.Name = myProduct.Name;
-            myModel.Price = myProduct.Price;
-            myModel.Id = myProduct.Id;
-            myModel.Category = new CategoryViewModel()
-            {
-                Id = myProduct.Category.Id,
-                Name = myProduct.Category.Name
-            };
-            return myModel;
-         */
 
         }
 
         public IQueryable<ProductViewModel> GetProducts()
         {
-            //to check whether this works
-            //demonstrate the alternative way with ProjectTo...
-
-
             var products = _productsRepo.GetProducts().ProjectTo<ProductViewModel>(_mapper.ConfigurationProvider);
 
             return products;
             //Domain >> ViewModels
-
-            //to be implemented using AutoMapper
-         /*   var list = from p in _productsRepo.GetProducts()
-                       select new ProductViewModel()
-                       {
-                           Id = p.Id,
-                           Description = p.Description,
-                           Name = p.Name,
-                           Price = p.Price,
-                           Category = new CategoryViewModel() { Id = p.Category.Id, Name = p.Category.Name },
-                           ImageUrl = p.ImageUrl
-                       };
-            return list;
-         */
-
         }
 
         public IQueryable<ProductViewModel> GetProducts(int category)
         {
-            var list = from p in _productsRepo.GetProducts().Where(x => x.Category.Id == category)
-                       select new ProductViewModel()
-                       {
-                           Id = p.Id,
-                           Description = p.Description,
-                           Name = p.Name,
-                           Price = p.Price,
-                           Category = new CategoryViewModel() { Id = p.Category.Id, Name = p.Category.Name },
-                           ImageUrl = p.ImageUrl
-                       };
+            var list = _productsRepo.GetProducts().Where(x => x.CategoryId == category)
+                       .ProjectTo<ProductViewModel>(_mapper.ConfigurationProvider);
             return list;
+
         }
 
 

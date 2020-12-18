@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingCart.Application.Interfaces;
 using ShoppingCart.Application.ViewModels;
+using ShoppingCart.Domain.Models;
 
 namespace PresentationWebApp.Controllers
 {
@@ -26,14 +27,21 @@ namespace PresentationWebApp.Controllers
 
         public IActionResult Index()
         {
+            var catList = _categoriesService.GetCategories();
+            ViewBag.Categories = catList;
             var list = _productsService.GetProducts();
             return View(list);
+            
         }
 
+        [HttpPost]
         public IActionResult Search(int category) //using a form, and the select list must have name attribute = category
         {
+            var catList = _categoriesService.GetCategories();
+            ViewBag.Categories = catList;
+
             var list = _productsService.GetProducts(category);
-            return RedirectToAction("Index", list);
+            return View("Index", list);
         }
 
 
@@ -68,7 +76,6 @@ namespace PresentationWebApp.Controllers
                 {
                     if(f.Length > 0)
                     {
-                        //C:\Users\Ryan\source\repos\SWD62BEP\SWD62BEP\Solution3\PresentationWebApp\wwwroot
                         string newFilename = Guid.NewGuid() + System.IO.Path.GetExtension(f.FileName);
                         string newFilenameWithAbsolutePath = _env.WebRootPath +  @"\Images\" + newFilename;
                         
@@ -114,9 +121,5 @@ namespace PresentationWebApp.Controllers
 
             return RedirectToAction("Index");
         }
-
-
-
-
     }
 }
