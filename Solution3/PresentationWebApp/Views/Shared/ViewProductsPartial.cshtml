@@ -8,21 +8,13 @@
             <img src="@p.ImageUrl" class="card-img-top image" alt="...">
             <div class="card-body">
                 <h5 class="card-title">@p.Name</h5>
-                <p class="card-text">@p.Price</p>
-                <div class="row">
-                    <div class="col">
-                        <a href="/Products/Details?id=@p.Id" class="btn btn-primary">View Specification</a>
-                    </div>
-                    <div class="col">
-                        <a class="btn btn-success">Add To Cart</a>
-                    </div>
-                    <div class="col mt-2">
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <a href="/Products/Delete?id=@p.Id" class="btn btn-danger">Delete</a>
-                        }
-                    </div>
-                </div>             
+                <p class="card-text">&euro; @p.Price</p>
+                <a href="/Products/Details?id=@p.Id" class="btn btn-sm btn-primary">View Specification</a>
+                <a href="" class="btn btn-sm btn-success">Add To Cart</a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a href="/Products/Delete?id=@p.Id" class="btn btn-sm btn-danger mt-2">Delete</a>
+                }                        
             </div>
         </div>
     </div>

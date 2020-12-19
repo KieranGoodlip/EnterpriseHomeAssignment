@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PagedList;
 using ShoppingCart.Application.Interfaces;
 using ShoppingCart.Application.ViewModels;
 using ShoppingCart.Domain.Models;
+using cloudscribe.Pagination.Models;
 
 namespace PresentationWebApp.Controllers
 {
@@ -25,12 +27,26 @@ namespace PresentationWebApp.Controllers
             _env = env;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int pageNumber = 0)
         {
             var catList = _categoriesService.GetCategories();
             ViewBag.Categories = catList;
-            var list = _productsService.GetProducts();
-            return View(list);
+
+            int pageSize = 10;
+
+            var list = _productsService.GetProducts();//.ToList();
+
+            int totalElements = list.Count();
+
+            var listInPage = list.Skip(pageNumber * pageSize).Take(pageSize);
+
+            int noOfPages = totalElements / pageSize;
+
+            ViewBag.totalPages = (noOfPages - (totalElements % pageSize == 0 ? 1 : 0));
+
+            ViewBag.pageNumber = pageNumber;
+            
+            return View(listInPage);
             
         }
 
