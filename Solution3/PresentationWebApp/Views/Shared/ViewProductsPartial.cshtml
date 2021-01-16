@@ -4,17 +4,40 @@
 @foreach (var p in Model)
 {
     <div class="col-6">
-        <div class="card" style="width: 18rem;">
+        <div class="card mb-2">
             <img src="@p.ImageUrl" class="card-img-top image" alt="...">
             <div class="card-body">
                 <h5 class="card-title">@p.Name</h5>
                 <p class="card-text">&euro; @p.Price</p>
-                <a href="/Products/Details?id=@p.Id" class="btn btn-sm btn-primary">View Specification</a>
-                <a href="" class="btn btn-sm btn-success">Add To Cart</a>
-                @if (User.IsInRole("Admin"))
+                <a href="/Products/Details?id=@p.Id" class="btn btn-sm btn-primary mb-2">View Specification</a>
+                <form>
+                    <input type="text" id="id" name ="id" class="form-control" value="@p.Id" hidden>
+                    <label class="form-control mb-1">Quantity</label>
+                    <select class="form-control mb-2" name="qty" id="qty">
+                        @for (int i = 0; i < 100; i++)
+                        {
+                            <option value="@(i+1)">@(i+1)</option>
+                        }
+                    </select>
+                    <a type="submit" href="/Products/addToCart?id=@p.Id" class="btn btn-sm btn-success">Add To Cart</a>
+                </form>
+
+                @if (ViewData["Title"] == "Index")
                 {
-                    <a href="/Products/Delete?id=@p.Id" class="btn btn-sm btn-danger mt-2">Delete</a>
-                }                        
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a href="/Products/Delete?id=@p.Id" class="btn btn-sm btn-danger mt-2">Delete</a>
+                    }  
+                }
+
+                @if (ViewData["Title"] == "Cart")
+                {
+                    <a href="/Products/?id=@p.Id" class="btn btn-sm btn-success">Add To Cart</a>
+
+                    <!-- Remove product--> 
+                    <!-- Delete Cart-->
+                    <!-- Check Out-->
+                }
             </div>
         </div>
     </div>

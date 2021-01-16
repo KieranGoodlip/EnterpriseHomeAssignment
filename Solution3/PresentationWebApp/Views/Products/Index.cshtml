@@ -15,9 +15,14 @@
         @Html.Partial("ViewProductsPartial", Model)
     </div>
 
-    <div class="ml-auto mt-3">
+    <div class="row">
         @Html.Partial("PaginationPartial", Model)
     </div>
+
+    <div class="row">
+        <a href="/Products/ShoppingCart?list=@ViewBag.productsList" class="btn btn-block btn-primary">View Shopping Cart</a>
+    </div>
+    <p>ViewBag.userId</p>
 </div>
 
 

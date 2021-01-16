@@ -1,0 +1,16 @@
+﻿@foreach (var p in ViewBag.productsList)
+{
+<div class="col-6">
+    <div class="card">
+        <img src="@p.ImageUrl" class="card-img-top image" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">@p.Name</h5>
+            <p class="card-text">&euro; @p.Price</p>
+            <a href="/Products/Details?id=@p.Id" class="btn btn-sm btn-primary">View Specification</a>
+            <a href="/Products/addToList?id=@p.Id" class="btn btn-sm btn-success">Add To Cart</a>
+            @if (User.IsInRole("Admin"))
+            {
+<a href="/Products/Delete?id=@p.Id" class="btn btn-sm btn-danger mt-2">Delete</a>                }
+        </div>
+    </div>
+</div>}

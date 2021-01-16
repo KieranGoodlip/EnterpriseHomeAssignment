@@ -15,13 +15,20 @@ using cloudscribe.Pagination.Models;
 namespace PresentationWebApp.Controllers
 {
     public class ProductsController : Controller
-    {
+    { 
         private readonly IProductsService _productsService;
         private readonly ICategoriesService _categoriesService;
+        private readonly ICartsService _cartsService;
+
         private IWebHostEnvironment _env;
-        public ProductsController(IProductsService productsService, ICategoriesService categoriesService,
+
+        //List<ProductViewModel> productsList = new List<ProductViewModel>();
+        List<CartViewModel> cartsList = new List<CartViewModel>();
+
+        public ProductsController(IProductsService productsService, ICategoriesService categoriesService, ICartsService cartsService,
              IWebHostEnvironment env )
         {
+            _cartsService = cartsService;
             _productsService = productsService;
             _categoriesService = categoriesService;
             _env = env;
@@ -45,10 +52,23 @@ namespace PresentationWebApp.Controllers
             ViewBag.totalPages = (noOfPages - (totalElements % pageSize == 0 ? 1 : 0));
 
             ViewBag.pageNumber = pageNumber;
+
+            ViewBag.productsList = list;
             
             return View(listInPage);
             
         }
+
+        //public IActionResult addToList(Guid id, List<ProductViewModel> list)
+        //{
+        //    var p = _productsService.GetProduct(id);
+
+        //    var _list = list;
+
+        //    _list.Add(p);
+
+        //    return RedirectToAction("Index", _list);
+        //}
 
         [HttpPost]
         public IActionResult Search(int category) //using a form, and the select list must have name attribute = category
@@ -64,7 +84,7 @@ namespace PresentationWebApp.Controllers
         public IActionResult Details(Guid id)
         {
             var p = _productsService.GetProduct(id);
-            return View( p);
+            return View(p);
         }
 
         //the engine will load a page with empty fields
@@ -80,6 +100,30 @@ namespace PresentationWebApp.Controllers
 
             return View();
         }
+
+        public IActionResult addToCart(Guid id)
+        {
+            try
+            {
+                ProductViewModel p = _productsService.GetProduct(id);
+
+                CartViewModel c = new CartViewModel();
+                c.Id = Guid.NewGuid();
+                c.Product = p;
+                c.Email = HttpContext.User.Identity.Name;
+                c.Qty = 1;
+
+                _cartsService.AddCart(c);
+
+                TempData["feedback"] = "Cart was added successfully";
+            }catch(Exception e)
+            {
+                TempData["warning"] = "Cart was not Added";
+            }
+
+            return RedirectToAction("Index");
+        }
+
 
         //here details input by the user will be received
         [HttpPost]
@@ -136,6 +180,11 @@ namespace PresentationWebApp.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        public IActionResult ShoppingCart(List<ProductViewModel> list)
+        {            
+            return View(list);
         }
     }
 }
