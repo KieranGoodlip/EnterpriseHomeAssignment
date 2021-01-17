@@ -34,25 +34,29 @@ namespace ShoppingCart.Data.Repositories
             _context.SaveChanges(); //this will save permanently into the db
         }
 
-        public void DisableProduct(Guid id)
+        public void DisableOrEnableProduct(Guid id)
         {
             var p =GetProduct(id);
-            p.Disable = true;
+
+            if (p.Disable == false)
+                p.Disable = true;
+            else
+                p.Disable = false;
+
             _context.SaveChanges();
         }
-
 
         public Product GetProduct(Guid id)
         {
             //ShoppingCartDbContext context = new ShoppingCartDbContext();
             //single or default will return ONE product! or null
-            return _context.Products.SingleOrDefault(x => x.Id == id);
+            return _context.Products/*.Where(x => x.Disable == false)*/.SingleOrDefault(x => x.Id == id);
         }
 
         public IQueryable<Product> GetProducts()
         {
             //ShoppingCartDbContext context = new ShoppingCartDbContext();
-            return _context.Products;
+            return _context.Products/*.Where(x => x.Disable == false)*/;
         }
     }
 }

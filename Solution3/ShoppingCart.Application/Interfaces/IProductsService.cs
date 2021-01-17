@@ -18,6 +18,8 @@ namespace ShoppingCart.Application.Interfaces
 
         void DeleteProduct(Guid id);
 
+        void DisableOrEnable(Guid id);
+
         
     }
 }

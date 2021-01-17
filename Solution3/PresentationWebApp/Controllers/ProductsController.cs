@@ -11,6 +11,7 @@ using ShoppingCart.Application.Interfaces;
 using ShoppingCart.Application.ViewModels;
 using ShoppingCart.Domain.Models;
 using cloudscribe.Pagination.Models;
+using Microsoft.Extensions.Logging;
 
 namespace PresentationWebApp.Controllers
 {
@@ -19,15 +20,18 @@ namespace PresentationWebApp.Controllers
         private readonly IProductsService _productsService;
         private readonly ICategoriesService _categoriesService;
         private readonly ICartsService _cartsService;
+        private readonly IOrdersService _ordersService;
+        private readonly ILogger<ProductsController> _productslogger;
 
         private IWebHostEnvironment _env;
 
         //List<ProductViewModel> productsList = new List<ProductViewModel>();
         List<CartViewModel> cartsList = new List<CartViewModel>();
 
-        public ProductsController(IProductsService productsService, ICategoriesService categoriesService, ICartsService cartsService,
+        public ProductsController(IProductsService productsService, ICategoriesService categoriesService, ICartsService cartsService, IOrdersService ordersService, ILogger<ProductsController> logger,
              IWebHostEnvironment env )
         {
+            _ordersService = ordersService;
             _cartsService = cartsService;
             _productsService = productsService;
             _categoriesService = categoriesService;
@@ -54,21 +58,10 @@ namespace PresentationWebApp.Controllers
             ViewBag.pageNumber = pageNumber;
 
             ViewBag.productsList = list;
-            
+
             return View(listInPage);
             
         }
-
-        //public IActionResult addToList(Guid id, List<ProductViewModel> list)
-        //{
-        //    var p = _productsService.GetProduct(id);
-
-        //    var _list = list;
-
-        //    _list.Add(p);
-
-        //    return RedirectToAction("Index", _list);
-        //}
 
         [HttpPost]
         public IActionResult Search(int category) //using a form, and the select list must have name attribute = category
@@ -101,24 +94,98 @@ namespace PresentationWebApp.Controllers
             return View();
         }
 
-        public IActionResult addToCart(Guid id)
+        [HttpPost]
+        [Authorize(Roles = "User, Admin")]
+        public IActionResult addToCart()
         {
             try
             {
-                ProductViewModel p = _productsService.GetProduct(id);
+                //ProductViewModel p = _productsService.GetProduct(Guid.Parse(HttpContext.Request.Form["id"]));
 
-                CartViewModel c = new CartViewModel();
-                c.Id = Guid.NewGuid();
-                c.Product = p;
-                c.Email = HttpContext.User.Identity.Name;
-                c.Qty = 1;
+                //CartViewModel c = new CartViewModel();
+                //c.Product = p;
+                //c.Email = HttpContext.User.Identity.Name;
+                //c.Qty = int.Parse(HttpContext.Request.Form["qty"]);
 
-                _cartsService.AddCart(c);
+                //_cartsService.AddCart(c);
 
-                TempData["feedback"] = "Cart was added successfully";
+                var product = _productsService.GetProduct(Guid.Parse(HttpContext.Request.Form["id"]));
+                var cartProduct = _cartsService.GetCart(product.Id).SingleOrDefault(x=>x.Email == HttpContext.User.Identity.Name);
+
+                if(cartProduct == null)
+                {
+                    cartProduct = new CartViewModel
+                    {
+                        Product = product,
+                        Email = HttpContext.User.Identity.Name,
+                        Qty = int.Parse(HttpContext.Request.Form["qty"])
+                    };
+                    _cartsService.AddCart(cartProduct);
+                }
+                else
+                {
+                    int quantity = int.Parse(HttpContext.Request.Form["qty"]) + cartProduct.Qty;
+                    _cartsService.UpdateQuantity(cartProduct.Product.Id, quantity);
+                }
+
+                TempData["feedback"] = "Product Added to Cart";
             }catch(Exception e)
             {
-                TempData["warning"] = "Cart was not Added";
+                TempData["warning"] = "Product Not Added To Cart";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "User, Admin")]
+        public IActionResult removeFromCart(Guid id)
+        {
+            var email = HttpContext.User.Identity.Name;
+            try
+            {
+                _cartsService.RemoveFromCart(id, email);
+
+                TempData["feedback"] = "Product was deleted successfully";
+            }
+            catch (Exception e)
+            {
+                TempData["warning"] = "Product was not Deleted";
+            }
+
+            return RedirectToAction("ShoppingCart");
+        }
+
+        [Authorize(Roles = "User, Admin")]
+        public IActionResult emptyCart()
+        {
+            var email = HttpContext.User.Identity.Name;
+            try
+            {
+                _cartsService.EmptyCart(email);
+
+                TempData["feedback"] = "Cart Emptied";
+            }
+            catch (Exception e)
+            {
+                TempData["warning"] = "Cart Not Emptied";
+            }
+
+            return RedirectToAction("ShoppingCart");
+        }
+
+        [Authorize(Roles = "User, Admin")]
+        public IActionResult checkOut()
+        {
+            var email = HttpContext.User.Identity.Name;
+            try
+            {
+                _ordersService.CheckOut(email);
+
+                TempData["feedback"] = "Check Out Succeeded";
+            }
+            catch (Exception e)
+            {
+                TempData["warning"] = "Check Out Failed";
             }
 
             return RedirectToAction("Index");
@@ -162,7 +229,7 @@ namespace PresentationWebApp.Controllers
            ViewBag.Categories = listOfCategeories;
             return View(data);
         
-        } //fiddler, burp, zap, postman
+        }
 
         [Authorize(Roles = "Admin")]
         public IActionResult Delete(Guid id)
@@ -182,8 +249,73 @@ namespace PresentationWebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult ShoppingCart(List<ProductViewModel> list)
-        {            
+        [Authorize(Roles = "Admin")]
+        public IActionResult DisableOrEnable(Guid id)
+        {
+            try
+            {
+                _productsService.DisableOrEnable(id);
+                TempData["feedback"] = "Product was disabled";
+            }
+            catch (Exception ex)
+            {
+                //log your error 
+
+                TempData["warning"] = "Product was not disabled"; 
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "User, Admin")]
+        public IActionResult ShoppingCart()
+        {
+            var cartsList = _cartsService.GetCarts(HttpContext.User.Identity.Name);
+            ViewBag.Carts = cartsList;
+
+            //var list = new Dictionary<ProductViewModel, int>();
+            var list = new List<ProductViewModel>();
+
+            foreach (var cart in cartsList)
+            {
+                ProductViewModel p = new ProductViewModel();
+                p = cart.Product;
+                p.Quantity = cart.Qty;                
+
+                if (list.Count == 0)
+                {
+                    list.Add(p);
+                }
+                else
+                {
+                    int index = 0;
+                    int oldQty = 0;
+                    bool todelete = false;
+                    foreach(var prod in list)
+                    {
+                        if(prod.Id == p.Id)
+                        {
+                            index = list.IndexOf(prod);
+                            oldQty = list[index].Quantity + cart.Qty;
+                            todelete = true;
+                            break;
+                        }
+                        else
+                        {
+                            oldQty = cart.Qty;
+                        }
+                    }
+                    if (todelete)
+                    {
+                        list.RemoveAt(index);
+                    }
+                    p.Quantity = oldQty;
+                    list.Add(p);
+                }
+            }
+
+            ViewBag.productsList = list;
+
             return View(list);
         }
     }

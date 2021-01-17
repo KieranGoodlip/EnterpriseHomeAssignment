@@ -9,6 +9,6 @@ namespace ShoppingCart.Domain.Interfaces
     {
         Guid AddOrder(Order order);
 
-        int AddOrderDetail(OrderDetail orderDetail);
+        void AddOrderDetails(List<OrderDetail> details);
     }
 }

@@ -8,8 +8,6 @@ namespace ShoppingCart.Application.Interfaces
 {
     public interface IOrdersService
     {
-        IQueryable<ProductViewModel> GetProducts(string email);
-
         void CheckOut(string email);
     }
 }

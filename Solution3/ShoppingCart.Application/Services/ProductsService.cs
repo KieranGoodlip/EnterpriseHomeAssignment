@@ -45,6 +45,11 @@ namespace ShoppingCart.Application.Services
             
         }
 
+        public void DisableOrEnable(Guid id)
+        {
+            _productsRepo.DisableOrEnableProduct(id);
+        }
+
         public ProductViewModel GetProduct(Guid id)
         {
             var myProduct = _productsRepo.GetProduct(id);
@@ -58,7 +63,6 @@ namespace ShoppingCart.Application.Services
             var products = _productsRepo.GetProducts().ProjectTo<ProductViewModel>(_mapper.ConfigurationProvider);
 
             return products;
-            //Domain >> ViewModels
         }
 
         public IQueryable<ProductViewModel> GetProducts(int category)

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ShoppingCart.Data.Repositories
 {
-    class OrdersRepository : IOrdersRepository
+    public class OrdersRepository : IOrdersRepository
     {
         ShoppingCartDbContext _context;
 
@@ -24,11 +24,13 @@ namespace ShoppingCart.Data.Repositories
             return order.Id;
         }
 
-        public int AddOrderDetail(OrderDetail orderDetail)
+        public void AddOrderDetails(List<OrderDetail> details)
         {
-            _context.OrderDetails.Add(orderDetail);
+            foreach (var detail in details)
+            {
+                _context.OrderDetails.Add(detail);
+            }
             _context.SaveChanges();
-            return orderDetail.Id;
         }       
 
     }

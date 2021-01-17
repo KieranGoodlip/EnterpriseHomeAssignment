@@ -9,3 +9,19 @@
     @Html.Partial("ViewProductsPartial", Model)
 </div>
 
+@if (ViewBag.productsList.Count == 0)
+{
+    <div class="alert text-center alert-warning">No Products Added To Cart!</div>
+}
+else
+{
+    <div class="row mb-2">
+        <a href="/Products/emptyCart" class="btn btn-block btn-danger">Clear Cart</a>
+    </div>
+
+    <div class="row">
+        <a href="/Products/checkOut" class="btn btn-block btn-success">Check Out</a>
+    </div>
+}
+
+

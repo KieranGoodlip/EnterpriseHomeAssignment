@@ -3,6 +3,7 @@ using ShoppingCart.Domain.Interfaces;
 using ShoppingCart.Domain.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ShoppingCart.Data.Repositories
@@ -29,6 +30,44 @@ namespace ShoppingCart.Data.Repositories
             {
                 return Guid.NewGuid();
             }
+        }
+
+        public void DeleteCarts(IQueryable<Cart> carts)
+        {
+            foreach(var cart in carts)
+            {
+                _context.Carts.Remove(cart);
+            }
+
+            _context.SaveChanges();
+        }
+
+        public void EmptyCart(IQueryable<Cart> carts)
+        {
+            foreach (var cart in carts)
+            {
+                _context.Carts.Remove(cart);
+            }
+
+            _context.SaveChanges();
+        }
+
+        public IQueryable<Cart> GetCart(Guid id)
+        {
+            var cart = _context.Carts.Where(x => x.Product_FK == id);
+            return cart;
+        }
+
+        public IQueryable<Cart> GetCarts()
+        {
+            return _context.Carts;
+        }
+
+        public void UpdateQuantity(Guid id, int quantity)
+        {
+            var cart = _context.Carts.SingleOrDefault(x => x.Product_FK == id);
+            cart.Qty = quantity;
+            _context.SaveChanges();
         }
     }
 }
