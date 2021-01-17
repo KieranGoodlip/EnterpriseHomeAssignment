@@ -21,7 +21,7 @@ namespace PresentationWebApp.Controllers
         private readonly ICategoriesService _categoriesService;
         private readonly ICartsService _cartsService;
         private readonly IOrdersService _ordersService;
-        private readonly ILogger<ProductsController> _productslogger;
+        private readonly ILogger<ProductsController> _productsLogger;
 
         private IWebHostEnvironment _env;
 
@@ -36,6 +36,7 @@ namespace PresentationWebApp.Controllers
             _productsService = productsService;
             _categoriesService = categoriesService;
             _env = env;
+            _productsLogger = logger;
         }
 
         public IActionResult Index(int pageNumber = 0)
@@ -59,6 +60,8 @@ namespace PresentationWebApp.Controllers
 
             ViewBag.productsList = list;
 
+            _productsLogger.LogInformation("Index Method loaded succesfully");
+
             return View(listInPage);
             
         }
@@ -70,6 +73,9 @@ namespace PresentationWebApp.Controllers
             ViewBag.Categories = catList;
 
             var list = _productsService.GetProducts(category);
+
+            _productsLogger.LogInformation("Searched By Category");
+
             return View("Index", list);
         }
 
@@ -90,6 +96,8 @@ namespace PresentationWebApp.Controllers
 
             //we pass the categories to the page
             ViewBag.Categories = listOfCategeories;
+
+            _productsLogger.LogInformation("Viewing product Details");
 
             return View();
         }
@@ -129,9 +137,12 @@ namespace PresentationWebApp.Controllers
                 }
 
                 TempData["feedback"] = "Product Added to Cart";
-            }catch(Exception e)
+                _productsLogger.LogInformation("Product Added To Cart");
+            }
+            catch(Exception e)
             {
                 TempData["warning"] = "Product Not Added To Cart";
+                _productsLogger.LogError(e.Message);
             }
 
             return RedirectToAction("Index");
@@ -146,10 +157,12 @@ namespace PresentationWebApp.Controllers
                 _cartsService.RemoveFromCart(id, email);
 
                 TempData["feedback"] = "Product was deleted successfully";
+                _productsLogger.LogInformation("Product Deleted Succesfully");
             }
             catch (Exception e)
             {
                 TempData["warning"] = "Product was not Deleted";
+                _productsLogger.LogError(e.Message);
             }
 
             return RedirectToAction("ShoppingCart");
@@ -164,10 +177,12 @@ namespace PresentationWebApp.Controllers
                 _cartsService.EmptyCart(email);
 
                 TempData["feedback"] = "Cart Emptied";
+                _productsLogger.LogInformation("Cart Emptied");
             }
             catch (Exception e)
             {
                 TempData["warning"] = "Cart Not Emptied";
+                _productsLogger.LogError(e.Message);
             }
 
             return RedirectToAction("ShoppingCart");
@@ -181,11 +196,13 @@ namespace PresentationWebApp.Controllers
             {
                 _ordersService.CheckOut(email);
 
-                TempData["feedback"] = "Check Out Succeeded";
+                TempData["feedback"] = "Check Out Succesfully";
+                _productsLogger.LogInformation("Check Out Succeeded");
             }
             catch (Exception e)
             {
                 TempData["warning"] = "Check Out Failed";
+                _productsLogger.LogInformation(e.Message);
             }
 
             return RedirectToAction("Index");
@@ -218,11 +235,12 @@ namespace PresentationWebApp.Controllers
                 _productsService.AddProduct(data);
 
                 TempData["feedback"] = "Product was added successfully";
+                _productsLogger.LogInformation("Product Created Succesfully");
             }
             catch (Exception ex)
             {
-                //log error
                 TempData["warning"] = "Product was not added!";
+                _productsLogger.LogError(ex.Message);
             }
 
            var listOfCategeories = _categoriesService.GetCategories();
@@ -238,12 +256,12 @@ namespace PresentationWebApp.Controllers
             {
                 _productsService.DeleteProduct(id);
                 TempData["feedback"] = "Product was deleted";
+                _productsLogger.LogInformation("Product Deleted");
             }
             catch (Exception ex)
             {
-                //log your error 
-
                 TempData["warning"] = "Product was not deleted"; //Change from ViewData to TempData
+                _productsLogger.LogError(ex.Message);
             }
 
             return RedirectToAction("Index");
@@ -255,13 +273,21 @@ namespace PresentationWebApp.Controllers
             try
             {
                 _productsService.DisableOrEnable(id);
-                TempData["feedback"] = "Product was disabled";
+                if (_productsService.GetProduct(id).Disable == false)
+                {
+                    TempData["feedback"] = "Product was disabled";
+                    _productsLogger.LogError("Product Disabled");
+                }
+                else
+                {
+                    TempData["feedback"] = "Product was Enabled";
+                    _productsLogger.LogError("Product Enabled");
+                }
             }
             catch (Exception ex)
             {
-                //log your error 
-
-                TempData["warning"] = "Product was not disabled"; 
+                TempData["warning"] = "Product was not disabled";
+                _productsLogger.LogError(ex.Message);
             }
 
             return RedirectToAction("Index");
@@ -273,7 +299,6 @@ namespace PresentationWebApp.Controllers
             var cartsList = _cartsService.GetCarts(HttpContext.User.Identity.Name);
             ViewBag.Carts = cartsList;
 
-            //var list = new Dictionary<ProductViewModel, int>();
             var list = new List<ProductViewModel>();
 
             foreach (var cart in cartsList)
@@ -315,6 +340,7 @@ namespace PresentationWebApp.Controllers
             }
 
             ViewBag.productsList = list;
+            _productsLogger.LogInformation("Viewing Shopping Cart");
 
             return View(list);
         }
