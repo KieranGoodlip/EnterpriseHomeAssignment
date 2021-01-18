@@ -1,115 +1,122 @@
 ﻿@model IEnumerable<ShoppingCart.Application.ViewModels.ProductViewModel>
 
-
-@foreach (var p in Model)
+@if (Model.Count() <= 0)
 {
-    if (p.Disable == true && User.IsInRole("Admin"))
+    <div class="alert text-center alert-warning">No Products Added Yet!</div>
+}
+else
+{
+
+    @foreach (var p in Model)
     {
-        <div class="col-6">
-            <div class="card mb-2">
-                <img src="@p.ImageUrl" class="card-img-top image" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">@p.Name</h5>
-                    <p class="card-text">&euro; @p.Price</p>
+        if (p.Disable == true && User.IsInRole("Admin"))
+        {
+            <div class="col-6">
+                <div class="card mb-2">
+                    <img src="@p.ImageUrl" class="card-img-top image" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Name</h5>
+                        <p class="card-text">&euro; @p.Price</p>
 
-                    @if (ViewData["Title"] == "ShoppingCart")
-                    {
-                        // display quntity
-                         <p class="card-text">Quantity: @p.Quantity</p>
-                    }
-
-                    <a href="/Products/Details?id=@p.Id" class="btn btn-sm btn-primary mb-2">View Specification</a>
-
-                    @if (ViewData["Title"] == "Index")
-                    {
-
-                        <form method="post" action="/Products/addToCart">
-                            <input type="text" id="id" name ="id" class="form-control" value="@p.Id" hidden>
-                            <div class="row mt-1 mb-1">
-                                <div class="col"><label class="form-control mb-1">Quantity</label></div>
-                                <div class="col"><input name="qty" id="qty" class="from-control" type="number" min="1" max="100" value="1"></div>
-                            </div>                        
-                            <button type="submit" class="btn btn-sm btn-success">Add To Cart</button>
-                        </form>
-
-                    }
-
-                    @if (ViewData["Title"] == "Index")
-                    {
-                        @if (User.IsInRole("Admin"))
+                        @if (ViewData["Title"] == "ShoppingCart")
                         {
-                            if (p.Disable == true)
-                            {
-                                <a href="/Products/DisableOrEnable?id=@p.Id" class="btn btn-sm btn-warning mt-2">Enable</a>
-                            }
-                            else
-                            {
-                                <a href="/Products/DisableOrEnable?id=@p.Id" class="btn btn-sm btn-danger mt-2">Disable</a>
-                            }
-                        }  
-                    }
+                            // display quntity
+                             <p class="card-text">Quantity: @p.Quantity</p>
+                        }
 
-                    @if (ViewData["Title"] == "ShoppingCart")
-                    {
-                        <a href="/Products/removeFromCart?id=@p.Id" class="btn btn-sm btn-danger">Remove From Cart</a>
-                    }
+                        <a href="/Products/Details?id=@p.Id" class="btn btn-sm btn-primary mb-2">View Specification</a>
+
+                        @if (ViewData["Title"] == "Index")
+                        {
+
+                            <form method="post" action="/Products/addToCart">
+                                <input type="text" id="id" name ="id" class="form-control" value="@p.Id" hidden>
+                                <div class="row mt-1 mb-1">
+                                    <div class="col"><label class="form-control mb-1">Quantity</label></div>
+                                    <div class="col"><input name="qty" id="qty" class="from-control" type="number" min="1" max="100" value="1"></div>
+                                </div>                        
+                                <button type="submit" class="btn btn-sm btn-success">Add To Cart</button>
+                            </form>
+
+                        }
+
+                        @if (ViewData["Title"] == "Index")
+                        {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                if (p.Disable == true)
+                                {
+                                    <a href="/Products/DisableOrEnable?id=@p.Id" class="btn btn-sm btn-warning mt-2">Enable</a>
+                                }
+                                else
+                                {
+                                    <a href="/Products/DisableOrEnable?id=@p.Id" class="btn btn-sm btn-danger mt-2">Disable</a>
+                                }
+                            }  
+                        }
+
+                        @if (ViewData["Title"] == "ShoppingCart")
+                        {
+                            <a href="/Products/removeFromCart?id=@p.Id" class="btn btn-sm btn-danger">Remove From Cart</a>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
-    }
+        }
 
-    if(p.Disable == false)
-    {
-        <div class="col-6">
-            <div class="card mb-2">
-                <img src="@p.ImageUrl" class="card-img-top image" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">@p.Name</h5>
-                    <p class="card-text">&euro; @p.Price</p>
+        if (p.Disable == false)
+        {
+            <div class="col-6">
+                <div class="card mb-2">
+                    <img src="@p.ImageUrl" class="card-img-top image" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Name</h5>
+                        <p class="card-text">&euro; @p.Price</p>
 
-                    @if (ViewData["Title"] == "ShoppingCart")
-                    {
-                        // display quntity
-                         <p class="card-text">Quantity: @p.Quantity</p>
-                    }
-
-                    <a href="/Products/Details?id=@p.Id" class="btn btn-sm btn-primary mb-2">View Specification</a>
-
-                    @if (ViewData["Title"] == "Index")
-                    {
-
-                        <form method="post" action="/Products/addToCart">
-                            <input type="text" id="id" name ="id" class="form-control" value="@p.Id" hidden>
-                            <div class="row mt-1 mb-1">
-                                <div class="col"><label class="mb-1">Quantity</label></div>
-                                <div class="col"><input name="qty" id="qty" class="from-control" type="number" min="1" max="100" value="1"></div>
-                            </div>                        
-                            <button type="submit" class="btn btn-sm btn-success">Add To Cart</button>
-                        </form>
-
-                    }
-
-                    @if (ViewData["Title"] == "Index")
-                    {
-                        @if (User.IsInRole("Admin"))
+                        @if (ViewData["Title"] == "ShoppingCart")
                         {
-                            if (p.Disable == true)
-                            {
-                                <a href="/Products/DisableOrEnable?id=@p.Id" class="btn btn-sm btn-warning mt-2">Enable</a>
-                            }
-                            else
-                            {
-                                <a href="/Products/DisableOrEnable?id=@p.Id" class="btn btn-sm btn-danger mt-2">Disable</a>
-                            }
-                        }  
-                    }
+                            // display quntity
+                             <p class="card-text">Quantity: @p.Quantity</p>
+                        }
 
-                    @if (ViewData["Title"] == "ShoppingCart")
-                    {
-                        <a href="/Products/removeFromCart?id=@p.Id" class="btn btn-sm btn-danger">Remove From Cart</a>
-                    }
+                        <a href="/Products/Details?id=@p.Id" class="btn btn-sm btn-primary mb-2">View Specification</a>
+
+                        @if (ViewData["Title"] == "Index")
+                        {
+
+                            <form method="post" action="/Products/addToCart">
+                                <input type="text" id="id" name ="id" class="form-control" value="@p.Id" hidden>
+                                <div class="row mt-1 mb-1">
+                                    <div class="col"><label class="mb-1">Quantity</label></div>
+                                    <div class="col"><input name="qty" id="qty" class="from-control" type="number" min="1" max="100" value="1"></div>
+                                </div>                        
+                                <button type="submit" class="btn btn-sm btn-success">Add To Cart</button>
+                            </form>
+
+                        }
+
+                        @if (ViewData["Title"] == "Index")
+                        {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                if (p.Disable == true)
+                                {
+                                    <a href="/Products/DisableOrEnable?id=@p.Id" class="btn btn-sm btn-warning mt-2">Enable</a>
+                                }
+                                else
+                                {
+                                    <a href="/Products/DisableOrEnable?id=@p.Id" class="btn btn-sm btn-danger mt-2">Disable</a>
+                                }
+                            }  
+                        }
+
+                        @if (ViewData["Title"] == "ShoppingCart")
+                        {
+                            <a href="/Products/removeFromCart?id=@p.Id" class="btn btn-sm btn-danger">Remove From Cart</a>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+        }
     }
 }
