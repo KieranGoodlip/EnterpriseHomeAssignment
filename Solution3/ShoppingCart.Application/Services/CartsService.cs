@@ -73,9 +73,9 @@ namespace ShoppingCart.Application.Services
             }
         }
 
-        public void UpdateQuantity(Guid id, int quantity)
+        public void UpdateQuantity(Guid id, int quantity, string email)
         {
-            _cartsRepo.UpdateQuantity(id, quantity);
+            _cartsRepo.UpdateQuantity(id, quantity, email);
         }
     }
 }

@@ -63,9 +63,9 @@ namespace ShoppingCart.Data.Repositories
             return _context.Carts;
         }
 
-        public void UpdateQuantity(Guid id, int quantity)
+        public void UpdateQuantity(Guid id, int quantity, string email)
         {
-            var cart = _context.Carts.SingleOrDefault(x => x.Product_FK == id);
+            var cart = _context.Carts.SingleOrDefault(x => x.Product_FK == id && x.Email == email);
             cart.Qty = quantity;
             _context.SaveChanges();
         }

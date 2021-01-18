@@ -1,23 +1,21 @@
 ﻿<nav aria-label="pagination">
     <ul class="pagination justify-content-center">
+        @if (ViewBag.pageNumber > 0)
+        {
             <li class="page-item">
                 <a class="page-link" href="@Url.Action("Index", new { pageNumber = ViewBag.pageNumber - 1 })" aria-label="Previous">
-                    @if (ViewBag.pageNumber > 0)
-                    {
-                        <span aria-hidden="true">&laquo;</span>
-                    }
-                    
+                    <p>Previous &laquo;</p>                 
                 </a>
             </li>
-
+        }
+        @if (ViewBag.pageNumber < ViewBag.totalPages)
+        {
             <li class="page-item">
                 <a class="page-link" href="@Url.Action("Index", new { pageNumber = ViewBag.pageNumber + 1 })" aria-label="Next">
-                    @if (ViewBag.pageNumber < ViewBag.totalPages)
-                    {
-                        <span aria-hidden="true">&raquo;</span>
-                    }
+                    <p>Next &raquo;</p>
                 </a>
             </li>
+        }
         </ul>
     </nav>
 

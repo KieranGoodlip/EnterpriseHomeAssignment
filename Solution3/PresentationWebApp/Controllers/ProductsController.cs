@@ -108,15 +108,6 @@ namespace PresentationWebApp.Controllers
         {
             try
             {
-                //ProductViewModel p = _productsService.GetProduct(Guid.Parse(HttpContext.Request.Form["id"]));
-
-                //CartViewModel c = new CartViewModel();
-                //c.Product = p;
-                //c.Email = HttpContext.User.Identity.Name;
-                //c.Qty = int.Parse(HttpContext.Request.Form["qty"]);
-
-                //_cartsService.AddCart(c);
-
                 var product = _productsService.GetProduct(Guid.Parse(HttpContext.Request.Form["id"]));
                 var cartProduct = _cartsService.GetCart(product.Id).SingleOrDefault(x=>x.Email == HttpContext.User.Identity.Name);
 
@@ -133,7 +124,7 @@ namespace PresentationWebApp.Controllers
                 else
                 {
                     int quantity = int.Parse(HttpContext.Request.Form["qty"]) + cartProduct.Qty;
-                    _cartsService.UpdateQuantity(cartProduct.Product.Id, quantity);
+                    _cartsService.UpdateQuantity(cartProduct.Product.Id, quantity, cartProduct.Email);
                 }
 
                 TempData["feedback"] = "Product Added to Cart";
@@ -141,7 +132,7 @@ namespace PresentationWebApp.Controllers
             }
             catch(Exception e)
             {
-                TempData["warning"] = "Product Not Added To Cart";
+                TempData["warning"] = "Something went wrong, product cannot be added to cart";
                 _productsLogger.LogError(e.Message);
             }
 
@@ -156,12 +147,12 @@ namespace PresentationWebApp.Controllers
             {
                 _cartsService.RemoveFromCart(id, email);
 
-                TempData["feedback"] = "Product was deleted successfully";
-                _productsLogger.LogInformation("Product Deleted Succesfully");
+                TempData["feedback"] = "Product was removed from cart";
+                _productsLogger.LogInformation("Product removed Succesfully");
             }
             catch (Exception e)
             {
-                TempData["warning"] = "Product was not Deleted";
+                TempData["warning"] = "Something went wrong, product cannot be removed";
                 _productsLogger.LogError(e.Message);
             }
 
@@ -181,7 +172,7 @@ namespace PresentationWebApp.Controllers
             }
             catch (Exception e)
             {
-                TempData["warning"] = "Cart Not Emptied";
+                TempData["warning"] = "Something went wrong, cart cannot be Emptied";
                 _productsLogger.LogError(e.Message);
             }
 
@@ -286,8 +277,17 @@ namespace PresentationWebApp.Controllers
             }
             catch (Exception ex)
             {
-                TempData["warning"] = "Product was not disabled";
-                _productsLogger.LogError(ex.Message);
+                if (_productsService.GetProduct(id).Disable == false)
+                {
+                    TempData["warning"] = "Product was not disabled";
+                    _productsLogger.LogError(ex.Message);
+                }
+                else
+                {
+                    TempData["warning"] = "Product was not enabled";
+                    _productsLogger.LogError(ex.Message);
+                }
+                
             }
 
             return RedirectToAction("Index");

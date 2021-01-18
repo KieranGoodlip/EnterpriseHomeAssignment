@@ -20,6 +20,6 @@ namespace ShoppingCart.Application.Interfaces
 
         void EmptyCart(string email);
 
-        void UpdateQuantity(Guid id, int quantity);
+        void UpdateQuantity(Guid id, int quantity, string email);
     }
 }

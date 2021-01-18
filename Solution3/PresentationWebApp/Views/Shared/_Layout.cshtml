@@ -12,7 +12,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Shopping Cart</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Shopping Cart App</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -20,13 +20,13 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        @*<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>*@
-
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">View Products</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+
+                        @*<li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">View Products</a>
+                        </li>*@
                         @if (User.IsInRole("Admin"))
                         {
                             <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Create">Add Product</a>
@@ -51,19 +51,7 @@
     <div class="container">
         <main role="main" class="pb-3">
 
-            @if (TempData["feedback"] != null)
-            {
-                <div class="alert alert-primary" role="alert">
-                    @TempData["feedback"]
-                </div>
-            }
-
-            @if (TempData["warning"] != null)
-            {
-                <div class="alert alert-warning" role="alert">
-                    @TempData["warning"]
-                </div>
-            }
+            @Html.Partial("FeedbackPartial")
 
 
             @RenderBody()

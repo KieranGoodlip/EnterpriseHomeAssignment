@@ -18,6 +18,6 @@ namespace ShoppingCart.Domain.Interfaces
 
         void EmptyCart(IQueryable<Cart> carts);
 
-        void UpdateQuantity(Guid id, int quantity);
+        void UpdateQuantity(Guid id, int quantity, string email);
     }
 }
