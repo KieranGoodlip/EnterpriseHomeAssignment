@@ -17,8 +17,10 @@ namespace ShoppingCart.Domain.Models
 
         public virtual Product Product { get; set; }
 
+        [Required]
         public string Email { get; set; }
 
+        [Required]
         public int Qty { get; set; }
     }
 }
