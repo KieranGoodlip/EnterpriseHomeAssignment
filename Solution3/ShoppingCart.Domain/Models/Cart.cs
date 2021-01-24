@@ -21,6 +21,7 @@ namespace ShoppingCart.Domain.Models
         public string Email { get; set; }
 
         [Required]
+        [Range(typeof(int), "0", "9999", ErrorMessage = "{0} must be a decimal/number between {1} and {2}.")]
         public int Qty { get; set; }
     }
 }

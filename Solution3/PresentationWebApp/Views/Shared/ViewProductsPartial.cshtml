@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<ShoppingCart.Application.ViewModels.ProductViewModel>
 
-@if (Model.Count() <= 0)
+@if (ViewData["Title"] == "Index" && Model.Count() <= 0)
 {
     <div class="alert text-center alert-warning">No Products Added Yet!</div>
 }
@@ -32,8 +32,8 @@ else
                             <form method="post" action="/Products/addToCart">
                                 <input type="text" id="id" name ="id" class="form-control" value="@p.Id" hidden>
                                 <div class="row mt-1 mb-1">
-                                    <div class="col"><label class="form-control mb-1">Quantity</label></div>
-                                    <div class="col"><input name="qty" id="qty" class="from-control" type="number" min="1" max="100" value="1"></div>
+                                    <div class="col"><label class="mb-1">Quantity</label></div>
+                                    <div class="col"><input name="qty" id="qty" class="from-control" type="number" min="1" max="9999" value="1"></div>
                                 </div>                        
                                 <button type="submit" class="btn btn-sm btn-success">Add To Cart</button>
                             </form>
@@ -88,7 +88,7 @@ else
                                 <input type="text" id="id" name ="id" class="form-control" value="@p.Id" hidden>
                                 <div class="row mt-1 mb-1">
                                     <div class="col"><label class="mb-1">Quantity</label></div>
-                                    <div class="col"><input name="qty" id="qty" class="from-control" type="number" min="1" max="100" value="1"></div>
+                                    <div class="col"><input name="qty" id="qty" class="from-control" type="number" min="1" max="9999" value="1"></div>
                                 </div>                        
                                 <button type="submit" class="btn btn-sm btn-success">Add To Cart</button>
                             </form>
